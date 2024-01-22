@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.jpa") version "1.9.22"
+    // allOpen 플러그인은 plugin.spring에, noArg 플러그인은 plugin.jpa에 포함됨
 }
 
 group = "com"
@@ -23,6 +24,18 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+// Kotlin에서 JPA를 사용하기 위해 noArg, allOpen 플러그인 적용 대상 지정
+noArg {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
 }
 
 dependencies {
