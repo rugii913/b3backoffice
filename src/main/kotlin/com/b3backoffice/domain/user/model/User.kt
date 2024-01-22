@@ -1,17 +1,15 @@
 package com.b3backoffice.domain.user.model
 
 import com.b3backoffice.domain.shared.model.BaseEntity
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
 class User(
-    var email: String,
+    val username: String,
     var password: String,
-    val name: String,
+    var email: String,
+    val realName: String,
     var nickname: String,
     var introduction: String,
 ): BaseEntity() {
