@@ -8,10 +8,7 @@ import java.time.LocalDateTime
 class User(
     val username: String,
     var password: String,
-    var email: String,
-    val realName: String,
-    var nickname: String,
-    var introduction: String,
+    @Embedded var profile: Profile,
 ): BaseEntity() {
 
     @Id
