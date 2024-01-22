@@ -13,7 +13,6 @@ class User(
     var password: String,
     val name: String,
     var nickname: String,
-    var role: String,
     var introduction: String,
 ): BaseEntity() {
 
@@ -22,4 +21,8 @@ class User(
     var id: Long? = null
 
     var deletedAt: LocalDateTime? = null
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    val role: UserRole = UserRole.COMMON
 }
