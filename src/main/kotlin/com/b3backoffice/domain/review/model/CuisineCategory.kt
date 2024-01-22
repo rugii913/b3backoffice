@@ -1,6 +1,6 @@
 package com.b3backoffice.domain.review.model
 
-enum class Category(val categoryInKorean: String) {
+enum class CuisineCategory(val categoryInKorean: String) {
     KOREAN("한식"),
     BUNSIK("분식"),
     CHINESE("중식"),
