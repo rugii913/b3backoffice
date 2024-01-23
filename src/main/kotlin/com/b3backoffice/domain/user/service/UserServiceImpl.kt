@@ -6,11 +6,13 @@ import com.b3backoffice.domain.user.dto.UserDto
 import com.b3backoffice.domain.user.model.Profile
 import com.b3backoffice.domain.user.model.User
 import com.b3backoffice.domain.user.repositiry.UserRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserServiceImpl(
-        private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ): UserService {
     override fun signup(request: SignupArgument): UserDto {
         if(userRepository.existsByUsername(request.username)){
@@ -19,7 +21,7 @@ class UserServiceImpl(
         val result = userRepository.save(
                 User(
                         username = request.username,
-                        password = request.password,
+                        password = passwordEncoder.encode(request.password),
                         profile = Profile(
                                 email = request.email,
                                 realName = request.realName,
