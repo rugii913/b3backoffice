@@ -1,13 +1,12 @@
 package com.b3backoffice.domain.user.controller
 
-import com.b3backoffice.domain.user.dto.LoginArgument
-import com.b3backoffice.domain.user.dto.LoginDto
-import com.b3backoffice.domain.user.dto.SignupArgument
-import com.b3backoffice.domain.user.dto.UserDto
+import com.b3backoffice.domain.user.dto.*
 import com.b3backoffice.domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
@@ -26,5 +25,13 @@ class UserController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.login(loginArgument))
+    }
+
+    @PutMapping("/users/{userId}")
+    fun updateProfile(@PathVariable userId:Long, @RequestBody updateProfileArgument: UpdateProfileArgument): ResponseEntity<Unit>{
+        userService.updateProfile(userId, updateProfileArgument)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build()
     }
 }
