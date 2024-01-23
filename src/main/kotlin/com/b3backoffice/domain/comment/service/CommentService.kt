@@ -2,10 +2,10 @@ package com.b3backoffice.domain.comment.service
 
 import com.b3backoffice.domain.comment.dto.CommentRequest
 import com.b3backoffice.domain.comment.dto.CommentResponse
-import com.b3backoffice.domain.comment.model.Comment
 import com.b3backoffice.domain.comment.model.toResponse
 import com.b3backoffice.domain.comment.repository.CommentRepository
-import jakarta.persistence.EntityNotFoundException
+import com.b3backoffice.domain.exception.DeletedCommentException
+import com.b3backoffice.domain.exception.ModelNotFoundException
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -15,6 +15,7 @@ class CommentService(
 ){
 
     fun getCommentList(reviewId: Long):List<CommentResponse>{
+        //TODO: 삭제된 Comment는 가져오지 않기 (deleteAt)
         return commentRepository.findAllByReviewId(reviewId).map { it.toResponse() }
     }
 
@@ -34,9 +35,10 @@ class CommentService(
     fun updateComment(reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
         //TODO: 검증 - 1~100자
         //TODO: 인가
-        //TODO: Custom 예외로 변경
 
-        val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw EntityNotFoundException()
+        val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
+        if(comment.deletedAt == null) throw DeletedCommentException()
+
         comment.content = request.content
 
         return commentRepository.save(comment).toResponse()
@@ -44,11 +46,10 @@ class CommentService(
 
     fun removeComment(reviewId: Long, commentId: Long) {
         //TODO: 인가
-        //TODO: soft delete
 
-        val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw EntityNotFoundException()
+        val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
+        if(comment.deletedAt == null) throw DeletedCommentException()
+
         comment.deletedAt = LocalDateTime.now()
-
-        TODO()
     }
 }

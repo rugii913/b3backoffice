@@ -6,6 +6,7 @@ import com.b3backoffice.domain.comment.service.CommentService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -18,6 +19,13 @@ import org.springframework.web.bind.annotation.RestController
 class CommentController (
     private val commentService: CommentService
 ){
+
+    @GetMapping
+    fun getCommentList(@PathVariable reviewId: Long) : ResponseEntity<List<CommentResponse>>{
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(commentService.getCommentList(reviewId))
+    }
 
     @PostMapping
     fun addComment(@PathVariable reviewId:Long, @RequestBody request:CommentRequest) : ResponseEntity<CommentResponse> {
