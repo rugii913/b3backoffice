@@ -28,4 +28,11 @@ class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorDto(e.message))
     }
+
+    @ExceptionHandler(DeletedCommentException::class)
+    fun handleDeletedCommentException(e: DeletedCommentException): ResponseEntity<ErrorDto> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorDto(e.message))
+    }
 }
