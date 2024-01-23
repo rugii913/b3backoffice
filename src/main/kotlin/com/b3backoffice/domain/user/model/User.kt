@@ -5,6 +5,7 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
+@Table(name = "app_user")
 class User(
     val username: String,
     var password: String,
