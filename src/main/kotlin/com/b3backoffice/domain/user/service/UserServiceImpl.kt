@@ -2,14 +2,12 @@ package com.b3backoffice.domain.user.service
 
 import com.b3backoffice.domain.exception.InvalidCredentialException
 import com.b3backoffice.domain.exception.ModelNotFoundException
-import com.b3backoffice.domain.user.dto.LoginArgument
-import com.b3backoffice.domain.user.dto.LoginDto
-import com.b3backoffice.domain.user.dto.SignupArgument
-import com.b3backoffice.domain.user.dto.UserDto
+import com.b3backoffice.domain.user.dto.*
 import com.b3backoffice.domain.user.model.Profile
 import com.b3backoffice.domain.user.model.User
 import com.b3backoffice.domain.user.repositiry.UserRepository
 import com.b3backoffice.infra.security.jwt.JwtPlugin
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -54,5 +52,17 @@ class UserServiceImpl(
         )
 
         return loginDto
+    }
+
+    override fun updateProfile(userId: Long, request: UpdateProfileArgument) {
+        //TODO: 인가
+
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+
+        user.profile.email = request.email
+        user.profile.nickname = request.nickname
+        user.profile.introduction = request.introduction
+
+        userRepository.save(user)
     }
 }
