@@ -1,4 +1,8 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://db.exafcocghrrkvqiuudbc.supabase.co:5432/postgres
+    username: postgres
+    password:
   jpa:
     hibernate:
       ddl-auto: none
@@ -20,3 +24,9 @@ logging:
             bind: trace #sql ? binding parameter까지 전부 확인하기
     springframework: # Security 적용 부분들을 체크하기 위한 로거
       security: debug
+
+auth:
+  jwt:
+    issuer: team.sparta.com
+    secret: PO4c8z41Hia5gJG3oeuFJMRYBB4Ws4aZ
+    accessTokenExpirationHour: 168
