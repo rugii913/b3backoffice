@@ -6,10 +6,8 @@ import org.springframework.data.jpa.repository.Query
 
 interface CommentRepository : JpaRepository<Comment, Long> {
 
-    //fun findAllByReviewId(reviewId: Long) : List<Comment>
-
     @Query("select c from Comment c where c.review.id = :reviewId and c.deletedAt is null")
-    fun findAllByReviewIdAndDeletedAt(reviewId: Long) : List<Comment>
+    fun findAllByReviewIdAndDeletedAtIsNull(reviewId: Long) : List<Comment>
 
     fun findByReviewIdAndId(reviewId:Long, commentId:Long) : Comment?
 }
