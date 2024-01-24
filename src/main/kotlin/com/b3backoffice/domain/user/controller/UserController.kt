@@ -35,7 +35,7 @@ class UserController(
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest): ResponseEntity<Unit> {
         val jwt = request.getBearerToken() ?: throw IllegalStateException("비정상 로그아웃 요청") // TODO 예외처리 다시
-        tokenInvalidationService.expireJwt(jwt)
+        tokenInvalidationService.expireToken(jwt)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
