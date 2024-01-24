@@ -11,7 +11,7 @@ create table review
     deleted_at        timestamp(6),
     user_id           bigint not null,
     store_name        varchar(40) not null,
-    category          varchar(20) not null,
+    cuisine_category  varchar(20) not null,
     address           varchar(200) not null,
     visited_at        timestamp(6) not null,
     waiting_time      int not null,
