@@ -1,6 +1,8 @@
 package com.b3backoffice.infra.security.jwt
 
 import com.b3backoffice.infra.security.UserPrincipal
+import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenException
+import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -12,7 +14,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val tokenInvalidationService: TokenInvalidationService,
 ): OncePerRequestFilter() {
     companion object{
         private val BEARER_PATTERN = Regex("^Bearer (.+?)$")
@@ -27,6 +30,8 @@ class JwtAuthenticationFilter(
         if(jwt != null){
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
+                    if (tokenInvalidationService.isInvalidatedToken(jwt)) throw InvalidatedTokenException()
+
                     val userId = it.payload.subject.toLong()
                     val username = it.payload.get("username", String::class.java)
                     val role = it.payload.get("role", String::class.java)
