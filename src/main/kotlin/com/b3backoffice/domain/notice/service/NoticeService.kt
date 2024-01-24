@@ -6,7 +6,6 @@ import com.b3backoffice.domain.notice.dto.NoticeResponse
 import com.b3backoffice.domain.notice.dto.UpdateNoticeRequest
 import com.b3backoffice.domain.notice.model.Notice
 import com.b3backoffice.domain.notice.repository.NoticeRepository
-import com.b3backoffice.domain.user.model.User
 import com.b3backoffice.domain.user.repositiry.UserRepository
 import jakarta.transaction.Transactional
 
@@ -42,8 +41,10 @@ class NoticeService(
        ).toResponse()
    }
     @Transactional
-     fun updateNotice(noticeId: Long, request: UpdateNoticeRequest): NoticeResponse {
+     fun updateNotice(noticeId: Long, userId: Long, request: UpdateNoticeRequest): NoticeResponse {
         val notice = noticeRepository.findByIdOrNull(noticeId) ?: throw ModelNotFoundException("Notice", noticeId)
+        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.") // TODO 더 적절한 예외 처리 필요
+
         val (title, context) = request
 
         notice.title = title
@@ -52,8 +53,9 @@ class NoticeService(
       return noticeRepository.save(notice).toResponse()
     }
     @Transactional
-     fun deleteNotice(noticeId: Long) {
+     fun deleteNotice(noticeId: Long, userId: Long) {
         val notice = noticeRepository.findByIdOrNull(noticeId) ?:throw ModelNotFoundException("Notice", noticeId)
+        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.") // TODO 더 적절한 예외 처리 필요
         noticeRepository.delete(notice)
     }
 

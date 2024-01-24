@@ -45,19 +45,22 @@ class NoticeController(
      @PutMapping("/notice/{noticeId}")
      fun updateNotice(
          @PathVariable noticeId: Long,
+         @AuthenticationPrincipal userPrincipal: UserPrincipal,
          @RequestBody updateNoticeRequest: UpdateNoticeRequest,
      ) :ResponseEntity<NoticeResponse>{
          return ResponseEntity
                .status(HttpStatus.OK)
-               .body(noticeService.updateNotice(noticeId, updateNoticeRequest))
+               .body(noticeService.updateNotice(noticeId, userPrincipal.id, updateNoticeRequest))
      }
 
     @DeleteMapping("/notices/{noticeId}")
-    fun deleteNotice(@PathVariable noticeId: Long): ResponseEntity<Unit> {
-        noticeService.deleteNotice(noticeId)
+    fun deleteNotice(
+        @PathVariable noticeId: Long,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+    ): ResponseEntity<Unit> {
+        noticeService.deleteNotice(noticeId, userPrincipal.id)
         return ResponseEntity
                .status(HttpStatus.NO_CONTENT)
                .build()
-
     }
 }
