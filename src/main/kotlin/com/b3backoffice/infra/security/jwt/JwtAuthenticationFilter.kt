@@ -1,6 +1,7 @@
 package com.b3backoffice.infra.security.jwt
 
 import com.b3backoffice.infra.security.UserPrincipal
+import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenException
 import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -29,7 +30,7 @@ class JwtAuthenticationFilter(
         if(jwt != null){
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
-                    if (tokenInvalidationService.isInvalidatedToken(jwt)) throw IllegalStateException("유효하지 않은 토큰") // TODO: 예외처리 다시
+                    if (tokenInvalidationService.isInvalidatedToken(jwt)) throw InvalidatedTokenException()
 
                     val userId = it.payload.subject.toLong()
                     val username = it.payload.get("username", String::class.java)

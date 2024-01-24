@@ -1,6 +1,7 @@
 package com.b3backoffice.infra.security
 
 import com.b3backoffice.infra.security.jwt.JwtAuthenticationFilter
+import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenExceptionFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -14,7 +15,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val authenticationEntryPoint: CustomAuthenticationEntryPoint
+    private val invalidatedTokenExceptionFilter: InvalidatedTokenExceptionFilter,
+    private val authenticationEntryPoint: CustomAuthenticationEntryPoint,
 ) {
 
     @Bean
@@ -35,6 +37,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(invalidatedTokenExceptionFilter, JwtAuthenticationFilter::class.java)
             .exceptionHandling {
                 it.authenticationEntryPoint(authenticationEntryPoint)
             }
