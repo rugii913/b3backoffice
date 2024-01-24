@@ -1,5 +1,7 @@
 package com.b3backoffice.domain.review.model
 
+import com.b3backoffice.domain.review.dto.ReviewResponse
+import com.b3backoffice.domain.review.dto.ReviewUpdateRequest
 import com.b3backoffice.domain.shared.model.BaseEntity
 import com.b3backoffice.domain.user.model.User
 import jakarta.persistence.*
@@ -23,4 +25,33 @@ class Review(
     var id: Long? = null
 
     var deletedAt: LocalDateTime? = null
+}
+
+fun Review.toResponse(): ReviewResponse {
+    return ReviewResponse(
+        createdAt = this.createdAt,
+        lastModifiedAt = this.lastModifiedAt,
+        userNickname = this.user.profile.nickname,
+        storeName = this.storeName,
+        cuisineCategory = this.cuisineCategory,
+        address = this.address,
+        visitedAt = this.visitedAt,
+        waitingTime = this.waitingTime,
+        storeSize = this.storeSize,
+        cleanliness = this.cleanliness,
+        content = this.content,
+    )
+}
+
+fun Review.updateFrom(request: ReviewUpdateRequest): Review {
+    this.storeName = request.storeName
+    this.cuisineCategory = request.cuisineCategory
+    this.address = request.address
+    this.visitedAt = request.visitedAt
+    this.waitingTime = request.waitingTime
+    this.storeSize = request.storeSize
+    this.cleanliness = request.cleanliness
+    this.content = request.content
+
+    return this
 }
