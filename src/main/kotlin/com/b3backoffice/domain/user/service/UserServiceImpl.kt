@@ -55,7 +55,6 @@ class UserServiceImpl(
     }
 
     override fun updateProfile(userId: Long, request: UpdateProfileArgument) {
-
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
 
         user.profile.email = request.email

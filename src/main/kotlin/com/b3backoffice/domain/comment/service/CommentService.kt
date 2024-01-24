@@ -9,6 +9,9 @@ import com.b3backoffice.domain.exception.DeletedCommentException
 import com.b3backoffice.domain.exception.ModelNotFoundException
 import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.review.repository.ReviewRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,14 +23,14 @@ class CommentService(
     private val reviewRepository: ReviewRepository
 ){
 
-    fun getCommentList(reviewId: Long):List<CommentResponse>{
-        //TODO: 페이징
-        return commentRepository.findAllByReviewIdAndDeletedAtIsNull(reviewId).map { it.toResponse() }
+    fun getCommentList(reviewId: Long, pageNumber:Int): Page<CommentResponse> {
+        val pageable: PageRequest = PageRequest.of(pageNumber, 10, Sort.by("createdAt").ascending())
+
+        return commentRepository.findAllByReviewIdAndDeletedAtIsNull(reviewId, pageable).map { it.toResponse() }
     }
 
     @Transactional
     fun addComment(reviewId: Long, request: CommentRequest): CommentResponse {
-
         val review = reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
         return commentRepository.save(
@@ -41,7 +44,6 @@ class CommentService(
 
     @Transactional
     fun updateComment(userId:Long, reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
-
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
         if(comment.user.id != userId) throw UnauthorizedException()
         if(comment.deletedAt == null) throw DeletedCommentException()
@@ -52,7 +54,6 @@ class CommentService(
     }
 
     fun removeComment(userId:Long, reviewId: Long, commentId: Long) {
-
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
         if(comment.user.id != userId) throw UnauthorizedException()
         if(comment.deletedAt == null) throw DeletedCommentException()

@@ -5,6 +5,7 @@ import com.b3backoffice.domain.comment.dto.CommentResponse
 import com.b3backoffice.domain.comment.service.CommentService
 import com.b3backoffice.infra.security.UserPrincipal
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RequestMapping("/reviews/{reviewId}/comments")
@@ -24,10 +26,10 @@ class CommentController (
 ){
 
     @GetMapping
-    fun getCommentList(@PathVariable reviewId: Long) : ResponseEntity<List<CommentResponse>>{
+    fun getCommentList(@PathVariable reviewId: Long, @RequestParam(value = "pageNum", defaultValue = "1") pageNum: Int) : ResponseEntity<Page<CommentResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.getCommentList(reviewId))
+            .body(commentService.getCommentList(reviewId, pageNum))
     }
 
     @PostMapping
