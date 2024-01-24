@@ -4,23 +4,17 @@ import com.b3backoffice.domain.notice.dto.CreateNoticeRequest
 import com.b3backoffice.domain.notice.dto.NoticeResponse
 import com.b3backoffice.domain.notice.dto.UpdateNoticeRequest
 import com.b3backoffice.domain.notice.service.NoticeService
-import com.b3backoffice.domain.notice.service.NoticeServiceImpl
+import com.b3backoffice.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.*
 
 
 @RequestMapping("/notices")
 @RestController
 class NoticeController(
-    private val noticeService: NoticeServiceImpl
+    private val noticeService: NoticeService
 ) {
 
     @GetMapping
@@ -34,22 +28,28 @@ class NoticeController(
     fun getNotice(@PathVariable noticeId: Long) : ResponseEntity<NoticeResponse> {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(NoticeService.getNoticeById(userId))
+                .body(noticeService.getNoticeById(noticeId))
     }
 
      @PostMapping
-     fun createNotice(@RequestParam createNoticeRequest: CreateNoticeRequest) : ResponseEntity<NoticeResponse> {
+     fun createNotice(
+         @AuthenticationPrincipal userPrincipal: UserPrincipal,
+         @RequestBody createNoticeRequest: CreateNoticeRequest,
+     ) : ResponseEntity<NoticeResponse> {
 
          return ResponseEntity
                  .status(HttpStatus.CREATED)
-                 .body(noticeService.createNotice(createNoticeRequest))
+                 .body(noticeService.createNotice(userPrincipal.id, createNoticeRequest))
      }
 
      @PutMapping("/notice/{noticeId}")
-     fun updateNotice(@PathVariable noticeId: Long) :ResponseEntity<NoticeResponse>{
+     fun updateNotice(
+         @PathVariable noticeId: Long,
+         @RequestBody updateNoticeRequest: UpdateNoticeRequest,
+     ) :ResponseEntity<NoticeResponse>{
          return ResponseEntity
                .status(HttpStatus.OK)
-               .body(noticeService.updateNotice(noticeId,UpdateNoticeRequest))
+               .body(noticeService.updateNotice(noticeId, updateNoticeRequest))
      }
 
     @DeleteMapping("/notices/{noticeId}")
