@@ -23,6 +23,7 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .csrf { it.disable() }
+            .logout { it.disable() }
             .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } } // 콘솔 H2 사용 위해서 필요
             .authorizeHttpRequests {
                 it.requestMatchers(
