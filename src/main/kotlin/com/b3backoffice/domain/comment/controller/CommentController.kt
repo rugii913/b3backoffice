@@ -3,6 +3,7 @@ package com.b3backoffice.domain.comment.controller
 import com.b3backoffice.domain.comment.dto.CommentRequest
 import com.b3backoffice.domain.comment.dto.CommentResponse
 import com.b3backoffice.domain.comment.service.CommentService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -28,14 +29,14 @@ class CommentController (
     }
 
     @PostMapping
-    fun addComment(@PathVariable reviewId:Long, @RequestBody request:CommentRequest) : ResponseEntity<CommentResponse> {
+    fun addComment(@PathVariable reviewId:Long, @RequestBody @Valid request:CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(commentService.addComment(reviewId, request))
     }
 
     @PutMapping("/{commentId}")
-    fun updateComment(@PathVariable reviewId: Long, @PathVariable commentId:Long, @RequestBody request: CommentRequest) : ResponseEntity<CommentResponse> {
+    fun updateComment(@PathVariable reviewId: Long, @PathVariable commentId:Long, @RequestBody @Valid request: CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(commentService.updateComment(reviewId, commentId, request))
