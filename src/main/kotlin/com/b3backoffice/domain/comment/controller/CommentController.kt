@@ -3,9 +3,11 @@ package com.b3backoffice.domain.comment.controller
 import com.b3backoffice.domain.comment.dto.CommentRequest
 import com.b3backoffice.domain.comment.dto.CommentResponse
 import com.b3backoffice.domain.comment.service.CommentService
+import com.b3backoffice.infra.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -36,15 +38,15 @@ class CommentController (
     }
 
     @PutMapping("/{commentId}")
-    fun updateComment(@PathVariable reviewId: Long, @PathVariable commentId:Long, @RequestBody @Valid request: CommentRequest) : ResponseEntity<CommentResponse> {
+    fun updateComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId: Long, @PathVariable commentId:Long, @RequestBody @Valid request: CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.updateComment(reviewId, commentId, request))
+            .body(commentService.updateComment(userPrincipal.id, reviewId, commentId, request))
     }
 
     @DeleteMapping("/{commentId}")
-    fun removeComment(@PathVariable reviewId: Long, @PathVariable commentId: Long) : ResponseEntity<Unit>{
-        commentService.removeComment(reviewId, commentId)
+    fun removeComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId: Long, @PathVariable commentId: Long) : ResponseEntity<Unit>{
+        commentService.removeComment(userPrincipal.id, reviewId, commentId)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()

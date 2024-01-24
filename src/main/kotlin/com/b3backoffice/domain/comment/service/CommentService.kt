@@ -7,6 +7,7 @@ import com.b3backoffice.domain.comment.model.toResponse
 import com.b3backoffice.domain.comment.repository.CommentRepository
 import com.b3backoffice.domain.exception.DeletedCommentException
 import com.b3backoffice.domain.exception.ModelNotFoundException
+import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.review.repository.ReviewRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -39,10 +40,10 @@ class CommentService(
     }
 
     @Transactional
-    fun updateComment(reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
-        //TODO: 인가
+    fun updateComment(userId:Long, reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
 
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
+        if(comment.user.id != userId) throw UnauthorizedException()
         if(comment.deletedAt == null) throw DeletedCommentException()
 
         comment.content = request.content
@@ -50,10 +51,10 @@ class CommentService(
         return commentRepository.save(comment).toResponse()
     }
 
-    fun removeComment(reviewId: Long, commentId: Long) {
-        //TODO: 인가
+    fun removeComment(userId:Long, reviewId: Long, commentId: Long) {
 
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
+        if(comment.user.id != userId) throw UnauthorizedException()
         if(comment.deletedAt == null) throw DeletedCommentException()
 
         comment.deletedAt = LocalDateTime.now()
