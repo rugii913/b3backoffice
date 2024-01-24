@@ -5,11 +5,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface CommentRepository : JpaRepository<Comment, Long> {
 
-    @Query("select c from Comment c where c.review.id = :reviewId and c.deletedAt is null")
-    fun findAllByReviewIdAndDeletedAtIsNull(reviewId: Long, pageable:Pageable) : Page<Comment>
+    fun findAllByReviewIdAndDeletedAtIsNull(reviewId: Long, pagable:Pageable) : Page<Comment>
 
     fun findByReviewIdAndId(reviewId:Long, commentId:Long) : Comment?
 }

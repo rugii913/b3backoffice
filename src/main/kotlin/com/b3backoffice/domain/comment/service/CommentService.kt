@@ -9,6 +9,7 @@ import com.b3backoffice.domain.exception.DeletedCommentException
 import com.b3backoffice.domain.exception.ModelNotFoundException
 import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.review.repository.ReviewRepository
+import com.b3backoffice.domain.user.repositiry.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -20,22 +21,24 @@ import java.time.LocalDateTime
 @Service
 class CommentService(
     private val commentRepository: CommentRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val userRepository: UserRepository
 ){
 
     fun getCommentList(reviewId: Long, pageNumber:Int): Page<CommentResponse> {
-        val pageable: PageRequest = PageRequest.of(pageNumber, 10, Sort.by("createdAt").ascending())
+        val pageable: PageRequest = PageRequest.of(pageNumber, 10)
 
         return commentRepository.findAllByReviewIdAndDeletedAtIsNull(reviewId, pageable).map { it.toResponse() }
     }
 
     @Transactional
-    fun addComment(reviewId: Long, request: CommentRequest): CommentResponse {
+    fun addComment(userId:Long, reviewId: Long, request: CommentRequest): CommentResponse {
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val review = reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
         return commentRepository.save(
             Comment(
-                user = review.user,
+                user = user,
                 review = review,
                 content = request.content,
             )
@@ -46,7 +49,7 @@ class CommentService(
     fun updateComment(userId:Long, reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
         if(comment.user.id != userId) throw UnauthorizedException()
-        if(comment.deletedAt == null) throw DeletedCommentException()
+        if(comment.deletedAt != null) throw DeletedCommentException()
 
         comment.content = request.content
 
@@ -56,7 +59,7 @@ class CommentService(
     fun removeComment(userId:Long, reviewId: Long, commentId: Long) {
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
         if(comment.user.id != userId) throw UnauthorizedException()
-        if(comment.deletedAt == null) throw DeletedCommentException()
+        if(comment.deletedAt != null) throw DeletedCommentException()
 
         comment.deletedAt = LocalDateTime.now()
     }

@@ -26,17 +26,17 @@ class CommentController (
 ){
 
     @GetMapping
-    fun getCommentList(@PathVariable reviewId: Long, @RequestParam(value = "pageNum", defaultValue = "1") pageNum: Int) : ResponseEntity<Page<CommentResponse>>{
+    fun getCommentList(@PathVariable reviewId: Long, @RequestParam(value = "pageNum", defaultValue = "0") pageNum: Int) : ResponseEntity<Page<CommentResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(commentService.getCommentList(reviewId, pageNum))
     }
 
     @PostMapping
-    fun addComment(@PathVariable reviewId:Long, @RequestBody @Valid request:CommentRequest) : ResponseEntity<CommentResponse> {
+    fun addComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId:Long, @RequestBody @Valid request:CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.addComment(reviewId, request))
+            .body(commentService.addComment(userPrincipal.id, reviewId, request))
     }
 
     @PutMapping("/{commentId}")
