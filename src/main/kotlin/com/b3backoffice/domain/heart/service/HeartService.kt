@@ -24,9 +24,13 @@ class HeartService(
 
         return if (existingHeart != null) {
             heartRepository.deleteByUserAndReview(user, review)
+            review.countHeart -= 1
+            reviewRepository.save(review)
             HeartResponse(message = "좋아요 취소")
         } else {
             heartRepository.save(Heart(user=user, review = review))
+            review.countHeart += 1
+            reviewRepository.save(review)
             HeartResponse(message = "좋아요 성공")
         }
     }

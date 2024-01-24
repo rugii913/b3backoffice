@@ -18,6 +18,7 @@ class Review(
     var storeSize: Int,
     var cleanliness: Int,
     var content: String,
+    var countHeart: Int = 0
 ) : BaseEntity() {
 
     @Id
@@ -40,6 +41,7 @@ fun Review.toResponse(): ReviewResponse {
         storeSize = this.storeSize,
         cleanliness = this.cleanliness,
         content = this.content,
+        countHeart = countHeart
     )
 }
 
