@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/reviews/{reviewId}/likes")
+@RequestMapping("/reviews/{reviewId}/hearts")
 class HeartController(
     private val heartService: HeartService
 ) {

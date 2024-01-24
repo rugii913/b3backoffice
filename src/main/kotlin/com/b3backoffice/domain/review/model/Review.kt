@@ -18,7 +18,6 @@ class Review(
     var storeSize: Int,
     var cleanliness: Int,
     var content: String,
-    var countHeart: Int = 0
 ) : BaseEntity() {
 
     @Id
@@ -26,6 +25,8 @@ class Review(
     var id: Long? = null
 
     var deletedAt: LocalDateTime? = null
+
+    var countHeart: Int = 0
 }
 
 fun Review.toResponse(): ReviewResponse {
