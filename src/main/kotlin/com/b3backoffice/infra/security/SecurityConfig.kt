@@ -13,7 +13,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val authenticationEntryPoint: CustomAuthenticationEntryPoint
 ) {
 
     @Bean
@@ -33,6 +34,9 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling {
+                it.authenticationEntryPoint(authenticationEntryPoint)
+            }
             .build()
     }
 }
