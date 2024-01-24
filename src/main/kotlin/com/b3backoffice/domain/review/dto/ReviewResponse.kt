@@ -15,4 +15,5 @@ data class ReviewResponse(
     val storeSize: Int,
     val cleanliness: Int,
     val content: String,
+    val countHeart: Int,
 )

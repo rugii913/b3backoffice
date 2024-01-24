@@ -25,6 +25,8 @@ class Review(
     var id: Long? = null
 
     var deletedAt: LocalDateTime? = null
+
+    var countHeart: Int = 0
 }
 
 fun Review.toResponse(): ReviewResponse {
@@ -40,6 +42,7 @@ fun Review.toResponse(): ReviewResponse {
         storeSize = this.storeSize,
         cleanliness = this.cleanliness,
         content = this.content,
+        countHeart = countHeart
     )
 }
 
