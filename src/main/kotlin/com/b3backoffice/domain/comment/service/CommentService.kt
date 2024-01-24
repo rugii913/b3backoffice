@@ -56,11 +56,13 @@ class CommentService(
         return commentRepository.save(comment).toResponse()
     }
 
+    @Transactional
     fun removeComment(userId:Long, reviewId: Long, commentId: Long) {
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
         if(comment.user.id != userId) throw UnauthorizedException()
         if(comment.deletedAt != null) throw DeletedCommentException()
 
         comment.deletedAt = LocalDateTime.now()
+        commentRepository.save(comment).toResponse()
     }
 }
