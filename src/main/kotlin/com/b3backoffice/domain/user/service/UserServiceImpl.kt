@@ -81,8 +81,8 @@ class UserServiceImpl(
     }
 
     private fun PastPassword.contains(requestedRawPassword: String): Boolean {
-        return (passwordEncoder.matches(requestedRawPassword, pastPasswordFirst)
-                || passwordEncoder.matches(requestedRawPassword, pastPasswordSecond)
-                || passwordEncoder.matches(requestedRawPassword, pastPasswordThird))
+        return (passwordEncoder.matches(requestedRawPassword, pastPasswordLatest)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordMidst)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordOldest))
     }
 }

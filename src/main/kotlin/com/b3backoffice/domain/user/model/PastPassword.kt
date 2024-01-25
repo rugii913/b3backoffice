@@ -10,14 +10,14 @@ class PastPassword(
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
     @OneToOne @JoinColumn(name = "user_id") val user: User = _user
-    var pastPasswordFirst: String = _user.password
-    var pastPasswordSecond: String = ""
-    var pastPasswordThird: String = ""
+    var pastPasswordLatest: String = _user.password
+    var pastPasswordMidst: String = ""
+    var pastPasswordOldest: String = ""
 
     fun updatePastPassword(requestedPassword: String): PastPassword {
-        pastPasswordThird = pastPasswordSecond
-        pastPasswordSecond = pastPasswordFirst
-        pastPasswordFirst = requestedPassword
+        pastPasswordOldest = pastPasswordMidst
+        pastPasswordMidst = pastPasswordLatest
+        pastPasswordLatest = requestedPassword
         return this
     }
 }
