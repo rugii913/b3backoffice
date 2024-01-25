@@ -1,5 +1,6 @@
 package com.b3backoffice.domain.notice.controller
 
+
 import com.b3backoffice.domain.notice.dto.CreateNoticeRequest
 import com.b3backoffice.domain.notice.dto.NoticeResponse
 import com.b3backoffice.domain.notice.dto.UpdateNoticeRequest
@@ -9,7 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-
+import jakarta.validation.Valid
 
 @RequestMapping("/notices")
 @RestController
@@ -35,6 +36,7 @@ class NoticeController(
      fun createNotice(
          @AuthenticationPrincipal userPrincipal: UserPrincipal,
          @RequestBody createNoticeRequest: CreateNoticeRequest,
+         @RequestBody @Valid request: CreateNoticeRequest,
      ) : ResponseEntity<NoticeResponse> {
 
          return ResponseEntity
@@ -47,6 +49,7 @@ class NoticeController(
          @PathVariable noticeId: Long,
          @AuthenticationPrincipal userPrincipal: UserPrincipal,
          @RequestBody updateNoticeRequest: UpdateNoticeRequest,
+         @RequestBody @Valid request: UpdateNoticeRequest,
      ) :ResponseEntity<NoticeResponse>{
          return ResponseEntity
                .status(HttpStatus.OK)

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class UpdateNoticeRequest(
-    @field:NotBlank(message = "내용을 작성해주세요.")
+    @field:NotBlank(message = "제목을 작성해주세요.")
     @field:Size(min = 1, max = 50, message = "글자수는 50자를 초과할 수 없습니다.")
     val title: String,
 
