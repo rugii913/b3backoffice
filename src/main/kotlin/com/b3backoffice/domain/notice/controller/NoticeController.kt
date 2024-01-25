@@ -35,25 +35,23 @@ class NoticeController(
      @PostMapping
      fun createNotice(
          @AuthenticationPrincipal userPrincipal: UserPrincipal,
-         @RequestBody createNoticeRequest: CreateNoticeRequest,
          @RequestBody @Valid request: CreateNoticeRequest,
      ) : ResponseEntity<NoticeResponse> {
 
          return ResponseEntity
                  .status(HttpStatus.CREATED)
-                 .body(noticeService.createNotice(userPrincipal.id, createNoticeRequest))
+                 .body(noticeService.createNotice(userPrincipal.id, request))
      }
 
      @PutMapping("/notice/{noticeId}")
      fun updateNotice(
          @PathVariable noticeId: Long,
          @AuthenticationPrincipal userPrincipal: UserPrincipal,
-         @RequestBody updateNoticeRequest: UpdateNoticeRequest,
          @RequestBody @Valid request: UpdateNoticeRequest,
      ) :ResponseEntity<NoticeResponse>{
          return ResponseEntity
                .status(HttpStatus.OK)
-               .body(noticeService.updateNotice(noticeId, userPrincipal.id, updateNoticeRequest))
+               .body(noticeService.updateNotice(noticeId, userPrincipal.id, request))
      }
 
     @DeleteMapping("/notices/{noticeId}")

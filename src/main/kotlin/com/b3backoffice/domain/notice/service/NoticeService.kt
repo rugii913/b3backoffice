@@ -51,7 +51,7 @@ class NoticeService(
         notice.content =context
 
       return noticeRepository.save(notice).toResponse()
-    }
+    }  
     @Transactional
      fun deleteNotice(noticeId: Long, userId: Long) {
         val notice = noticeRepository.findByIdOrNull(noticeId) ?:throw ModelNotFoundException("Notice", noticeId)
