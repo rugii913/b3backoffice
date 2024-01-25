@@ -10,6 +10,8 @@ import com.b3backoffice.domain.review.model.toResponse
 import com.b3backoffice.domain.review.model.updateFrom
 import com.b3backoffice.domain.review.repository.ReviewRepository
 import com.b3backoffice.domain.user.repositiry.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,8 +28,8 @@ class ReviewService(
             ?: throw ModelNotFoundException("Review", reviewId)
     }
 
-    fun getReviewList(): List<ReviewResponse> {
-        return reviewRepository.findAllByDeletedAtIsNull().map { it.toResponse() }
+    fun getReviewList(pageable: PageRequest): Page<ReviewResponse> {
+        return reviewRepository.findAllByDeletedAtIsNull(pageable).map { it.toResponse() }
     }
 
     @Transactional
