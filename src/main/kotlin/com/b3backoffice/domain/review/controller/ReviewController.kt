@@ -5,6 +5,7 @@ import com.b3backoffice.domain.review.dto.ReviewResponse
 import com.b3backoffice.domain.review.dto.ReviewUpdateRequest
 import com.b3backoffice.domain.review.service.ReviewService
 import com.b3backoffice.infra.security.UserPrincipal
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -33,7 +34,7 @@ class ReviewController(
     @PostMapping
     fun createReview(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: ReviewCreateRequest,
+        @Valid @RequestBody request: ReviewCreateRequest,
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -44,7 +45,7 @@ class ReviewController(
     fun updateReview(
         @PathVariable reviewId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: ReviewUpdateRequest,
+        @Valid @RequestBody request: ReviewUpdateRequest,
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
