@@ -20,6 +20,7 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin
 ) : UserService {
+
     override fun signup(request: SignupArgument): UserDto {
         if (userRepository.existsByUsername(request.username)) {
             throw InvalidCredentialException("Username is already in use")
@@ -35,7 +36,9 @@ class UserServiceImpl(
                     introduction = request.introduction
                 )
             )
-        )
+        ).also {
+            pastPasswordRepository.save(PastPassword(it))
+        }
         return UserDto.to(result)
     }
 
