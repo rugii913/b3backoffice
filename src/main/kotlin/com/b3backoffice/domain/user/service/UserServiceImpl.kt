@@ -19,22 +19,22 @@ class UserServiceImpl(
     private val pastPasswordRepository: PastPasswordRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin
-): UserService {
+) : UserService {
     override fun signup(request: SignupArgument): UserDto {
-        if(userRepository.existsByUsername(request.username)){
+        if (userRepository.existsByUsername(request.username)) {
             throw InvalidCredentialException("Username is already in use")
         }
         val result = userRepository.save(
-                User(
-                        username = request.username,
-                        password = passwordEncoder.encode(request.password),
-                        profile = Profile(
-                                email = request.email,
-                                realName = request.realName,
-                                nickname = request.nickname,
-                                introduction = request.introduction
-                        )
+            User(
+                username = request.username,
+                password = passwordEncoder.encode(request.password),
+                profile = Profile(
+                    email = request.email,
+                    realName = request.realName,
+                    nickname = request.nickname,
+                    introduction = request.introduction
                 )
+            )
         )
         return UserDto.to(result)
     }
@@ -42,7 +42,7 @@ class UserServiceImpl(
     override fun login(request: LoginArgument): LoginDto {
         val foundUser = userRepository.findByUsername(request.username) ?: throw ModelNotFoundException("User", null)
 
-        if(!passwordEncoder.matches(request.password, foundUser.password)){
+        if (!passwordEncoder.matches(request.password, foundUser.password)) {
             throw IllegalStateException()
         }
 
@@ -67,36 +67,19 @@ class UserServiceImpl(
         userRepository.save(user)
     }
 
-    override fun updatePassword(userId: Long, request: UpdatePasswordArgument) {
+    override fun updatePassword(userId: Long, request: UpdatePasswordArgument): Unit {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val pastPassword = pastPasswordRepository.findByUser(user)
+        if (pastPassword.contains(request.password)) throw IllegalStateException("이미 사용한 비밀번호입니다.") // TODO 더 나은 예외 처리
 
-        if (isPastPassword(pastPassword, request.password)) throw IllegalStateException("해당 비밀번호 변경 불가") // TODO 예외 처리 다시
-
-        updatePastPassword(pastPassword, request.password)
-        updateUserPassword(user, request.password)
+        val requestedEncodedPassword: String = passwordEncoder.encode(request.password)
+        user.updatePassword(requestedEncodedPassword).also { userRepository.save(it) }
+        pastPassword.updatePastPassword(requestedEncodedPassword).also { pastPasswordRepository.save(it) }
     }
 
-    private fun isPastPassword(pastPassword: PastPassword, requestedPassword: String): Boolean {
-        var result = false
-        if (
-            pastPassword.pastPasswordFirst == requestedPassword
-            || pastPassword.pastPasswordSecond == requestedPassword
-            || pastPassword.pastPasswordThird == requestedPassword
-        ) result = true
-        return result
-    }
-
-    private fun updatePastPassword(pastPassword: PastPassword, requestedPassword: String) {
-        pastPassword.pastPasswordThird = pastPassword.pastPasswordSecond
-        pastPassword.pastPasswordSecond = pastPassword.pastPasswordFirst
-        pastPassword.pastPasswordFirst = requestedPassword
-
-        pastPasswordRepository.save(pastPassword)
-    }
-
-    private fun updateUserPassword(user: User, requestedPassword: String) {
-        user.password = requestedPassword
-        userRepository.save(user)
+    private fun PastPassword.contains(requestedRawPassword: String): Boolean {
+        return (passwordEncoder.matches(requestedRawPassword, pastPasswordFirst)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordSecond)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordThird))
     }
 }

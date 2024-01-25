@@ -10,4 +10,11 @@ class PastPassword(
     var pastPasswordFirst: String = ""
     var pastPasswordSecond: String = ""
     var pastPasswordThird: String = ""
+
+    fun updatePastPassword(requestedPassword: String): PastPassword {
+        pastPasswordThird = pastPasswordSecond
+        pastPasswordSecond = pastPasswordFirst
+        pastPasswordFirst = requestedPassword
+        return this
+    }
 }

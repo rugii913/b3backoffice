@@ -21,4 +21,9 @@ class User(
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     val role: UserRole = UserRole.COMMON
+
+    fun updatePassword(requestedPassword: String): User {
+        this.password = requestedPassword
+        return this
+    }
 }
