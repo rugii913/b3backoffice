@@ -30,7 +30,7 @@ class NoticeService(
   @Transactional
     fun createNotice(userId: Long, request: CreateNoticeRequest): NoticeResponse {
 
-        val foundUser = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("적절한 예외처리 필요함") // TODO 적절한 예외처리 필요함
+        val foundUser = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.")
 
        return noticeRepository.save(
            Notice(
@@ -43,7 +43,7 @@ class NoticeService(
     @Transactional
      fun updateNotice(noticeId: Long, userId: Long, request: UpdateNoticeRequest): NoticeResponse {
         val notice = noticeRepository.findByIdOrNull(noticeId) ?: throw ModelNotFoundException("Notice", noticeId)
-        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.") // TODO 더 적절한 예외 처리 필요
+        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.")
 
         val (title, context) = request
 
@@ -51,11 +51,11 @@ class NoticeService(
         notice.content =context
 
       return noticeRepository.save(notice).toResponse()
-    }
+    }  
     @Transactional
      fun deleteNotice(noticeId: Long, userId: Long) {
         val notice = noticeRepository.findByIdOrNull(noticeId) ?:throw ModelNotFoundException("Notice", noticeId)
-        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.") // TODO 더 적절한 예외 처리 필요
+        if (notice.user.id != userId) throw IllegalArgumentException("요청한 사용자와 Notice 작성한 사용자가 다릅니다.")
         noticeRepository.delete(notice)
     }
 
