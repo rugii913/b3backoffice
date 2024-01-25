@@ -42,6 +42,12 @@ class UserController(
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
+    private fun HttpServletRequest.getBearerToken(): String?{
+        val bearerPattern = Regex("^Bearer (.+?)$") // TODO - JwtAuthenticationFilter와 중복을 깔끔하게 제거하려면?
+        val headerValue = this.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
+        return bearerPattern.find(headerValue)?.groupValues?.get(1)
+    }
+
     @PutMapping("/users/{userId}")
     fun updateProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable userId:Long, @RequestBody updateProfileArgument: UpdateProfileArgument): ResponseEntity<Unit>{
         if(userPrincipal.id != userId) throw UnauthorizedException()
@@ -52,9 +58,12 @@ class UserController(
             .build()
     }
 
-    private fun HttpServletRequest.getBearerToken(): String?{
-        val bearerPattern = Regex("^Bearer (.+?)$") // TODO - JwtAuthenticationFilter와 중복을 깔끔하게 제거하려면?
-        val headerValue = this.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
-        return bearerPattern.find(headerValue)?.groupValues?.get(1)
+    @PutMapping("/users/password") // TODO API 명세 수정 필요
+    fun updatePassword(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody updatePasswordArgument: UpdatePasswordArgument
+    ): ResponseEntity<Unit>{
+        userService.updatePassword(userPrincipal.id, updatePasswordArgument)
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 }
