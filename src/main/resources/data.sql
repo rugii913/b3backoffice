@@ -11,6 +11,13 @@ values
         '$2a$10$gWc9DyM61k8OXPt8/qOzI.3zOm2CGh3FWEANOKOYuQwLbYs5uP8a2', 'string', 'string', 'string', 'string',
         'COMMON', 'test3333', default);
 
+insert into past_password
+    (id, user_id, past_password_first, past_password_second, past_password_third)
+values
+    (1, 1, '$2a$10$FztQozehoZx4SySGf/ZequuMZhCmNqVVJZRUgRolQwCjUNtkLNwfe', '', ''),
+    (2, 2, '$2a$10$/FcMF/KKrK6.rjfvVn7oROfsFbvj96.JOWGt5O.wvxpxQUJJBl3tm', '', ''),
+    (3, 3, '$2a$10$gWc9DyM61k8OXPt8/qOzI.3zOm2CGh3FWEANOKOYuQwLbYs5uP8a2', '', '');
+
 insert into review
     (address, cleanliness, content, count_heart, created_at, cuisine_category, deleted_at, last_modified_at, store_name, store_size, user_id, visited_at, waiting_time, id)
 values
