@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 class Review(
     @ManyToOne @JoinColumn(name = "user_id") val user: User,
     var storeName: String,
-    var cuisineCategory: CuisineCategory,
+    @Enumerated(EnumType.STRING) var cuisineCategory: CuisineCategory,
     var address: String,
     var visitedAt: LocalDateTime,
     var waitingTime: Int,

@@ -5,6 +5,10 @@ import com.b3backoffice.domain.review.dto.ReviewResponse
 import com.b3backoffice.domain.review.dto.ReviewUpdateRequest
 import com.b3backoffice.domain.review.service.ReviewService
 import com.b3backoffice.infra.security.UserPrincipal
+import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -24,16 +28,20 @@ class ReviewController(
     }
 
     @GetMapping
-    fun getReviewList(): ResponseEntity<List<ReviewResponse>> {
+    fun getReviewList(
+        @RequestParam page: Int = 0,
+    ): ResponseEntity<Page<ReviewResponse>> {
+        val pageable = PageRequest.of(page, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, "id")
+
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(reviewService.getReviewList())
+            .body(reviewService.getReviewList(pageable))
     }
 
     @PostMapping
     fun createReview(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: ReviewCreateRequest,
+        @Valid @RequestBody request: ReviewCreateRequest,
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -44,7 +52,7 @@ class ReviewController(
     fun updateReview(
         @PathVariable reviewId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: ReviewUpdateRequest,
+        @Valid @RequestBody request: ReviewUpdateRequest,
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -58,5 +66,9 @@ class ReviewController(
     ): ResponseEntity<Unit> {
         reviewService.deleteReview(userPrincipal.id, reviewId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    companion object {
+        const val DEFAULT_PAGE_SIZE = 10
     }
 }

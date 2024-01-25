@@ -1,5 +1,7 @@
 package com.b3backoffice.domain.review.service
 
+import com.b3backoffice.domain.exception.ModelNotFoundException
+import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.review.dto.ReviewCreateRequest
 import com.b3backoffice.domain.review.dto.ReviewResponse
 import com.b3backoffice.domain.review.dto.ReviewUpdateRequest
@@ -8,6 +10,8 @@ import com.b3backoffice.domain.review.model.toResponse
 import com.b3backoffice.domain.review.model.updateFrom
 import com.b3backoffice.domain.review.repository.ReviewRepository
 import com.b3backoffice.domain.user.repositiry.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,18 +24,17 @@ class ReviewService(
 ) {
 
     fun getReview(reviewId: Long): ReviewResponse {
-        return reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
-            ?.toResponse()
-            ?: throw IllegalArgumentException("해당 review 없음") // TODO 예외 처리 다시
+        return reviewRepository.findByIdAndDeletedAtIsNull(reviewId)?.toResponse()
+            ?: throw ModelNotFoundException("Review", reviewId)
     }
 
-    fun getReviewList(): List<ReviewResponse> {
-        return reviewRepository.findAllByDeletedAtIsNull().map { it.toResponse() }
+    fun getReviewList(pageable: PageRequest): Page<ReviewResponse> {
+        return reviewRepository.findAllByDeletedAtIsNull(pageable).map { it.toResponse() }
     }
 
     @Transactional
     fun createReview(userId: Long, request: ReviewCreateRequest): ReviewResponse {
-        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 사용자 없음") // TODO 예외 처리 다시
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId) // TODO 적절한 예외 다시 한 번 고민
 
         return Review(
             user = user,
@@ -50,21 +53,19 @@ class ReviewService(
 
     @Transactional
     fun updateReview(reviewId: Long, userId: Long, request: ReviewUpdateRequest): ReviewResponse {
-        val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
-            ?: throw IllegalArgumentException("해당 사용자 없음") // TODO 예외 처리 다시 - 데이터 없거나 삭제된 경우 예외 처리
+        val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
         return review.updateFrom(request)
-            .also { if (it.user.id != userId) throw IllegalStateException("권한 없는 사용자") } // TODO 예외 처리 다시
+            .also { if (it.user.id != userId) throw UnauthorizedException() }
             .let { reviewRepository.save(it) }
             .toResponse()
     }
 
     @Transactional
     fun deleteReview(reviewId: Long, userId: Long): Unit {
-        val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
-            ?: throw IllegalArgumentException("해당 사용자 없음") // TODO 예외 처리 다시 - 데이터 없거나 삭제된 경우 예외 처리
+        val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
-        review.also { if (it.user.id != userId) throw IllegalStateException("권한 없는 사용자") } // TODO 예외 처리 다시
+        review.also { if (it.user.id != userId) throw UnauthorizedException() }
             .also { it.deletedAt = LocalDateTime.now() }
     }
 }
