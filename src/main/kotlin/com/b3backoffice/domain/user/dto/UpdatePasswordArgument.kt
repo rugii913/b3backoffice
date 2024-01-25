@@ -1,5 +1,6 @@
 package com.b3backoffice.domain.user.dto
 
 data class UpdatePasswordArgument(
-    val password: String
+    val previousPassword: String,
+    val newPassword: String
 )

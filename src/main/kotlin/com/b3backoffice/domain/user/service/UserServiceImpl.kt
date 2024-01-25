@@ -72,12 +72,14 @@ class UserServiceImpl(
 
     override fun updatePassword(userId: Long, request: UpdatePasswordArgument): Unit {
         val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        if (user.password != request.previousPassword) throw IllegalStateException("비밀번호 불일치") // TODO 더 나은 예외 처리
+        
         val pastPassword = pastPasswordRepository.findByUser(user)
-        if (pastPassword.contains(request.password)) throw IllegalStateException("이미 사용한 비밀번호입니다.") // TODO 더 나은 예외 처리
+        if (pastPassword.contains(request.newPassword)) throw IllegalStateException("이미 사용한 비밀번호입니다.") // TODO 더 나은 예외 처리
 
-        val requestedEncodedPassword: String = passwordEncoder.encode(request.password)
-        user.updatePassword(requestedEncodedPassword).also { userRepository.save(it) }
-        pastPassword.updatePastPassword(requestedEncodedPassword).also { pastPasswordRepository.save(it) }
+        val encodedNewPassword: String = passwordEncoder.encode(request.newPassword)
+        user.updatePassword(encodedNewPassword).also { userRepository.save(it) }
+        pastPassword.updatePastPassword(encodedNewPassword).also { pastPasswordRepository.save(it) }
     }
 
     private fun PastPassword.contains(requestedRawPassword: String): Boolean {
