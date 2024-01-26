@@ -16,6 +16,7 @@ class JwtPlugin(
         @Value("\${auth.jwt.issuer}") private val issuer: String,
         @Value("\${auth.jwt.secret}") private val secret: String,
         @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
+        @Value("\${auth.jwt.refreshTokenExpirationHour}") private val refreshTokenExpirationHour: Long,
 ) {
 
     fun validateToken(jwt: String): Result<Jws<Claims>>{
@@ -44,5 +45,18 @@ class JwtPlugin(
                 .claims(claims)
                 .signWith(key)
                 .compact()
+    }
+
+    fun generateRefreshToken(): String {
+        val now = Instant.now()
+        val expirationPeriod = Duration.ofHours(refreshTokenExpirationHour)
+        val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+
+        return Jwts.builder()
+            .issuer(issuer)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plus(expirationPeriod)))
+            .signWith(key)
+            .compact()
     }
 }

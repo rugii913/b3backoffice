@@ -54,7 +54,8 @@ class UserServiceImpl(
                 subject = foundUser.id.toString(),
                 username = foundUser.username,
                 role = foundUser.role.toString()
-            )
+            ),
+            refreshToken = jwtPlugin.generateRefreshToken()
         )
 
         return loginDto
