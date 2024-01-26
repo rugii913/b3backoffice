@@ -12,6 +12,13 @@ values
         'COMMON', 'test3333', default); -- id 3번, COMMON 역할, username: test3333, password: test333#
 
 
+insert into past_password
+    (id, user_id, past_password_latest, past_password_midst, past_password_oldest)
+values
+    (default, 1, '$2a$10$FztQozehoZx4SySGf/ZequuMZhCmNqVVJZRUgRolQwCjUNtkLNwfe', '', ''),
+    (default, 2, '$2a$10$/FcMF/KKrK6.rjfvVn7oROfsFbvj96.JOWGt5O.wvxpxQUJJBl3tm', '', ''),
+    (default, 3, '$2a$10$gWc9DyM61k8OXPt8/qOzI.3zOm2CGh3FWEANOKOYuQwLbYs5uP8a2', '', '');
+
 insert into review
     (address, cleanliness, content, count_heart, created_at, cuisine_category, deleted_at, last_modified_at, store_name, store_size, user_id, visited_at, waiting_time, id)
 values

@@ -3,8 +3,10 @@ package com.b3backoffice.domain.user.service
 import com.b3backoffice.domain.exception.InvalidCredentialException
 import com.b3backoffice.domain.exception.ModelNotFoundException
 import com.b3backoffice.domain.user.dto.*
+import com.b3backoffice.domain.user.model.PastPassword
 import com.b3backoffice.domain.user.model.Profile
 import com.b3backoffice.domain.user.model.User
+import com.b3backoffice.domain.user.repositiry.PastPasswordRepository
 import com.b3backoffice.domain.user.repositiry.UserRepository
 import com.b3backoffice.infra.security.jwt.JwtPlugin
 import org.springframework.data.repository.findByIdOrNull
@@ -14,32 +16,36 @@ import org.springframework.stereotype.Service
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val pastPasswordRepository: PastPasswordRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin
-): UserService {
+) : UserService {
+
     override fun signup(request: SignupArgument): UserDto {
-        if(userRepository.existsByUsername(request.username)){
+        if (userRepository.existsByUsername(request.username)) {
             throw InvalidCredentialException("Username is already in use")
         }
         val result = userRepository.save(
-                User(
-                        username = request.username,
-                        password = passwordEncoder.encode(request.password),
-                        profile = Profile(
-                                email = request.email,
-                                realName = request.realName,
-                                nickname = request.nickname,
-                                introduction = request.introduction
-                        )
+            User(
+                username = request.username,
+                password = passwordEncoder.encode(request.password),
+                profile = Profile(
+                    email = request.email,
+                    realName = request.realName,
+                    nickname = request.nickname,
+                    introduction = request.introduction
                 )
-        )
+            )
+        ).also {
+            pastPasswordRepository.save(PastPassword(it))
+        }
         return UserDto.to(result)
     }
 
     override fun login(request: LoginArgument): LoginDto {
         val foundUser = userRepository.findByUsername(request.username) ?: throw ModelNotFoundException("User", null)
 
-        if(!passwordEncoder.matches(request.password, foundUser.password)){
+        if (!passwordEncoder.matches(request.password, foundUser.password)) {
             throw IllegalStateException()
         }
 
@@ -62,5 +68,23 @@ class UserServiceImpl(
         user.profile.introduction = request.introduction
 
         userRepository.save(user)
+    }
+
+    override fun updatePassword(userId: Long, request: UpdatePasswordArgument): Unit {
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        if (user.password != request.previousPassword) throw IllegalStateException("비밀번호 불일치") // TODO 더 나은 예외 처리
+        
+        val pastPassword = pastPasswordRepository.findByUser(user)
+        if (pastPassword.contains(request.newPassword)) throw IllegalStateException("이미 사용한 비밀번호입니다.") // TODO 더 나은 예외 처리
+
+        val encodedNewPassword: String = passwordEncoder.encode(request.newPassword)
+        user.updatePassword(encodedNewPassword).also { userRepository.save(it) }
+        pastPassword.updatePastPassword(encodedNewPassword).also { pastPasswordRepository.save(it) }
+    }
+
+    private fun PastPassword.contains(requestedRawPassword: String): Boolean {
+        return (passwordEncoder.matches(requestedRawPassword, pastPasswordLatest)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordMidst)
+                || passwordEncoder.matches(requestedRawPassword, pastPasswordOldest))
     }
 }
