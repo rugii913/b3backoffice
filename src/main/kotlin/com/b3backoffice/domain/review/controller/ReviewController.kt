@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
@@ -38,6 +39,7 @@ class ReviewController(
             .body(reviewService.getReviewList(pageable))
     }
 
+    @PreAuthorize("hasRole('COMMON')")
     @PostMapping
     fun createReview(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
@@ -48,6 +50,7 @@ class ReviewController(
             .body(reviewService.createReview(userPrincipal.id, request))
     }
 
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @PutMapping("/{reviewId}")
     fun updateReview(
         @PathVariable reviewId: Long,
@@ -59,6 +62,7 @@ class ReviewController(
             .body(reviewService.updateReview(reviewId, userPrincipal.id, request))
     }
 
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @DeleteMapping("/{reviewId}")
     fun deleteReview(
         @PathVariable reviewId: Long,

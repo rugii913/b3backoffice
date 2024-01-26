@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import jakarta.validation.Valid
+import org.springframework.security.access.prepost.PreAuthorize
 
 @RequestMapping("/notices")
 @RestController
@@ -32,6 +33,7 @@ class NoticeController(
                 .body(noticeService.getNoticeById(noticeId))
     }
 
+     @PreAuthorize("hasRole('ADMIN')")
      @PostMapping
      fun createNotice(
          @AuthenticationPrincipal userPrincipal: UserPrincipal,
@@ -43,6 +45,7 @@ class NoticeController(
                  .body(noticeService.createNotice(userPrincipal.id, request))
      }
 
+     @PreAuthorize("hasRole('ADMIN')")
      @PutMapping("/notice/{noticeId}")
      fun updateNotice(
          @PathVariable noticeId: Long,
@@ -54,6 +57,7 @@ class NoticeController(
                .body(noticeService.updateNotice(noticeId, userPrincipal.id, request))
      }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/notices/{noticeId}")
     fun deleteNotice(
         @PathVariable noticeId: Long,
