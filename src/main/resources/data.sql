@@ -12,7 +12,7 @@ values
         'COMMON', 'test3333', default);
 
 insert into past_password
-    (id, user_id, past_password_first, past_password_second, past_password_third)
+    (id, user_id, past_password_latest, past_password_midst, past_password_oldest)
 values
     (default, 1, '$2a$10$FztQozehoZx4SySGf/ZequuMZhCmNqVVJZRUgRolQwCjUNtkLNwfe', '', ''),
     (default, 2, '$2a$10$/FcMF/KKrK6.rjfvVn7oROfsFbvj96.JOWGt5O.wvxpxQUJJBl3tm', '', ''),

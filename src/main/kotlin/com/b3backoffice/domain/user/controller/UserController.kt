@@ -58,7 +58,7 @@ class UserController(
             .build()
     }
 
-    @PutMapping("/users/password") // TODO API 명세 수정 필요
+    @PutMapping("/users/my-password") // TODO API 명세와 다시 비교
     fun updatePassword(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody updatePasswordArgument: UpdatePasswordArgument
