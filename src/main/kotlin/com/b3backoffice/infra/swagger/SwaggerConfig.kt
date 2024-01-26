@@ -36,7 +36,7 @@ class SwaggerConfig {
                     SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
                         .`in`(SecurityScheme.In.HEADER)
-                        .name("Refresh Token")
+                        .name("RefreshToken")
                 )
         )
         .info(
