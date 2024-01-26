@@ -15,9 +15,11 @@ class SwaggerConfig {
     fun openAPI(): OpenAPI = OpenAPI()
         // Swagger 자동 문서화 관련 Bean 재정의
         // - title, description, version 설정
-        // - authentication 관련 부분 사용할 수 있도록 수정
+        // - Authorize 사용할 수 있도록 수정
         .addSecurityItem(
-            SecurityRequirement().addList("Bearer Authentication")
+            SecurityRequirement()
+                .addList("Bearer Authentication")
+                .addList("Refresh Token") // 참고: https://velog.io/@seulpace/Swagger-Springdoc-access-token-refresh-token-설정
         )
         .components(
             Components()
@@ -29,6 +31,12 @@ class SwaggerConfig {
                         .bearerFormat("JWT")
                         .`in`(SecurityScheme.In.HEADER)
                         .name("Authorization")
+                ).addSecuritySchemes(
+                    "Refresh Token",
+                    SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .`in`(SecurityScheme.In.HEADER)
+                        .name("Refresh Token")
                 )
         )
         .info(
