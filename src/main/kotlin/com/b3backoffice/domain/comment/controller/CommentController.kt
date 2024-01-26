@@ -26,7 +26,7 @@ class CommentController (
     private val commentService: CommentService
 ){
 
-    @PreAuthorize("hasRole('COMMON')")
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @GetMapping
     fun getCommentList(@PathVariable reviewId: Long, @RequestParam(value = "pageNum", defaultValue = "0") pageNum: Int) : ResponseEntity<Page<CommentResponse>>{
         return ResponseEntity
@@ -34,7 +34,7 @@ class CommentController (
             .body(commentService.getCommentList(reviewId, pageNum))
     }
 
-    @PreAuthorize("hasRole('COMMON')")
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @PostMapping
     fun addComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId:Long, @RequestBody @Valid request:CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
