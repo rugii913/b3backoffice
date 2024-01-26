@@ -3,13 +3,14 @@ insert into app_user
 values
     ('2024-01-23T15:17:35.242610400', null, '2024-01-23T15:17:35.243574700',
         '$2a$10$FztQozehoZx4SySGf/ZequuMZhCmNqVVJZRUgRolQwCjUNtkLNwfe', 'string', 'string', 'string', 'string',
-        'ADMIN', 'test1111', default),
+        'ADMIN', 'test1111', default), -- id 1번, ADMIN 역할, username: test1111, password: test111!
     ('2024-01-24T15:17:35.242610400', null, '2024-01-24T15:17:35.243574700',
         '$2a$10$/FcMF/KKrK6.rjfvVn7oROfsFbvj96.JOWGt5O.wvxpxQUJJBl3tm', 'string', 'string', 'string', 'string',
-        'COMMON', 'test2222', default),
+        'COMMON', 'test2222', default), -- id 2번, COMMON 역할, username: test2222, password: test222@
     ('2024-01-25T15:17:35.242610400', null, '2024-01-25T15:17:35.243574700',
         '$2a$10$gWc9DyM61k8OXPt8/qOzI.3zOm2CGh3FWEANOKOYuQwLbYs5uP8a2', 'string', 'string', 'string', 'string',
-        'COMMON', 'test3333', default);
+        'COMMON', 'test3333', default); -- id 3번, COMMON 역할, username: test3333, password: test333#
+
 
 insert into review
     (address, cleanliness, content, count_heart, created_at, cuisine_category, deleted_at, last_modified_at, store_name, store_size, user_id, visited_at, waiting_time, id)
