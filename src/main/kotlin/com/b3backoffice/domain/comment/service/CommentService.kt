@@ -10,6 +10,7 @@ import com.b3backoffice.domain.exception.ModelNotFoundException
 import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.review.repository.ReviewRepository
 import com.b3backoffice.domain.user.repositiry.UserRepository
+import com.b3backoffice.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -46,9 +47,11 @@ class CommentService(
     }
 
     @Transactional
-    fun updateComment(userId:Long, reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
+    fun updateComment(user:UserPrincipal, reviewId: Long, commentId: Long, request: CommentRequest): CommentResponse {
+        val userRole = user.authorities.map { it.authority }
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
-        if(comment.user.id != userId) throw UnauthorizedException()
+
+        if("ROLE_COMMON" in userRole && comment.user.id != user.id) throw UnauthorizedException()
         if(comment.deletedAt != null) throw DeletedCommentException()
 
         comment.content = request.content
@@ -57,9 +60,11 @@ class CommentService(
     }
 
     @Transactional
-    fun removeComment(userId:Long, reviewId: Long, commentId: Long) {
+    fun removeComment(user:UserPrincipal, reviewId: Long, commentId: Long) {
+        val userRole = user.authorities.map { it.authority }
         val comment = commentRepository.findByReviewIdAndId(reviewId, commentId) ?: throw ModelNotFoundException("Comment", commentId)
-        if(comment.user.id != userId) throw UnauthorizedException()
+
+        if("ROLE_COMMON" in userRole && comment.user.id != user.id) throw UnauthorizedException()
         if(comment.deletedAt != null) throw DeletedCommentException()
 
         comment.deletedAt = LocalDateTime.now()
