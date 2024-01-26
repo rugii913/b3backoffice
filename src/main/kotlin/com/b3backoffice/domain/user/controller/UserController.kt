@@ -61,7 +61,7 @@ class UserController(
     @PutMapping("/users/my-password") // TODO API 명세와 다시 비교
     fun updatePassword(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody updatePasswordArgument: UpdatePasswordArgument
+        @RequestBody @Valid updatePasswordArgument: UpdatePasswordArgument
     ): ResponseEntity<Unit>{
         userService.updatePassword(userPrincipal.id, updatePasswordArgument)
         return ResponseEntity.status(HttpStatus.OK).build()
