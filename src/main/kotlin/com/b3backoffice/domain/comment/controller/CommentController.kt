@@ -8,6 +8,7 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,6 +26,7 @@ class CommentController (
     private val commentService: CommentService
 ){
 
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @GetMapping
     fun getCommentList(@PathVariable reviewId: Long, @RequestParam(value = "pageNum", defaultValue = "0") pageNum: Int) : ResponseEntity<Page<CommentResponse>>{
         return ResponseEntity
@@ -32,6 +34,7 @@ class CommentController (
             .body(commentService.getCommentList(reviewId, pageNum))
     }
 
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @PostMapping
     fun addComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId:Long, @RequestBody @Valid request:CommentRequest) : ResponseEntity<CommentResponse> {
         return ResponseEntity
@@ -39,16 +42,19 @@ class CommentController (
             .body(commentService.addComment(userPrincipal.id, reviewId, request))
     }
 
+    @PreAuthorize("hasRole('COMMON')")
     @PutMapping("/{commentId}")
     fun updateComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId: Long, @PathVariable commentId:Long, @RequestBody @Valid request: CommentRequest) : ResponseEntity<CommentResponse> {
+
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.updateComment(userPrincipal.id, reviewId, commentId, request))
+            .body(commentService.updateComment(userPrincipal, reviewId, commentId, request))
     }
 
+    @PreAuthorize("hasRole('COMMON')")
     @DeleteMapping("/{commentId}")
     fun removeComment(@AuthenticationPrincipal userPrincipal: UserPrincipal, @PathVariable reviewId: Long, @PathVariable commentId: Long) : ResponseEntity<Unit>{
-        commentService.removeComment(userPrincipal.id, reviewId, commentId)
+        commentService.removeComment(userPrincipal, reviewId, commentId)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()

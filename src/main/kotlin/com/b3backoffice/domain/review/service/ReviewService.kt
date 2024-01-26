@@ -53,19 +53,32 @@ class ReviewService(
 
     @Transactional
     fun updateReview(reviewId: Long, userId: Long, request: ReviewUpdateRequest): ReviewResponse {
+        val user = userRepository.findByIdOrNull(userId)
         val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
-        return review.updateFrom(request)
-            .also { if (it.user.id != userId) throw UnauthorizedException() }
-            .let { reviewRepository.save(it) }
-            .toResponse()
+        return if(user?.role.toString() == "ADMIN" ){
+            review.updateFrom(request)
+                .let { reviewRepository.save(it) }
+                .toResponse()
+        } else {
+            review.updateFrom(request)
+                .also { if (it.user.id != userId) throw UnauthorizedException() }
+                .let { reviewRepository.save(it) }
+                .toResponse()
+        }
     }
 
     @Transactional
     fun deleteReview(reviewId: Long, userId: Long): Unit {
+        val user = userRepository.findByIdOrNull(userId)
         val review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId) ?: throw ModelNotFoundException("Review", reviewId)
 
-        review.also { if (it.user.id != userId) throw UnauthorizedException() }
-            .also { it.deletedAt = LocalDateTime.now() }
+        if(user?.role.toString() == "ADMIN" ){
+            review.also { it.deletedAt = LocalDateTime.now() }
+        }else{
+            review.also { if (it.user.id != userId) throw UnauthorizedException() }
+                .also { it.deletedAt = LocalDateTime.now() }
+        }
+
     }
 }
