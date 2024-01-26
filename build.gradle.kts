@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.jpa") version "1.9.22"
+    kotlin("kapt") version "1.8.22" //test
     // allOpen 플러그인은 plugin.spring에, noArg 플러그인은 plugin.jpa에 포함됨
 }
 
@@ -76,9 +77,11 @@ dependencies {
     // test - spring security test
     testImplementation("org.springframework.security:spring-security-test")
     // test - kotest
-    testImplementation("io.kotest:kotest-runner-junit5:5.7.2")
-    testImplementation("io.kotest:kotest-assertions-core:5.7.2")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.5") //5.7.2 -> 5.5.5
+    testImplementation("io.kotest:kotest-assertions-core:5.5.5") //5.7.2 -> 5.5.5
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.postgresql:postgresql")
 }
 
 tasks.withType<KotlinCompile> {
@@ -88,6 +91,6 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach() {
     useJUnitPlatform()
 }
