@@ -50,7 +50,7 @@ class ReviewController(
             .body(reviewService.createReview(userPrincipal.id, request))
     }
 
-    @PreAuthorize("hasRole('COMMON')")
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @PutMapping("/{reviewId}")
     fun updateReview(
         @PathVariable reviewId: Long,
@@ -62,7 +62,7 @@ class ReviewController(
             .body(reviewService.updateReview(reviewId, userPrincipal.id, request))
     }
 
-    @PreAuthorize("hasRole('COMMON')")
+    @PreAuthorize("hasRole('COMMON') or hasRole('ADMIN')")
     @DeleteMapping("/{reviewId}")
     fun deleteReview(
         @PathVariable reviewId: Long,
