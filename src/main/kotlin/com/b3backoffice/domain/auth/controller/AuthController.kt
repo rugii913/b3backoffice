@@ -1,10 +1,8 @@
 package com.b3backoffice.domain.auth.controller
 
-import com.b3backoffice.domain.auth.ReissueAccessTokenRequest
-import com.b3backoffice.domain.auth.ReissueAccessTokenResponse
+import com.b3backoffice.domain.auth.dto.ReissueAccessTokenRequest
+import com.b3backoffice.domain.auth.dto.ReissueAccessTokenResponse
 import com.b3backoffice.domain.auth.service.AuthService
-import com.b3backoffice.infra.security.jwt.JwtPlugin
-import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

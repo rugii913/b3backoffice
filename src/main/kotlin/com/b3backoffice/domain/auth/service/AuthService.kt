@@ -1,6 +1,6 @@
 package com.b3backoffice.domain.auth.service
 
-import com.b3backoffice.domain.auth.ReissueAccessTokenResponse
+import com.b3backoffice.domain.auth.dto.ReissueAccessTokenResponse
 import com.b3backoffice.infra.security.jwt.JwtPlugin
 import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenException
 import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
