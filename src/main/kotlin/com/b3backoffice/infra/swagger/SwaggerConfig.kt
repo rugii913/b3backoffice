@@ -19,7 +19,6 @@ class SwaggerConfig {
         .addSecurityItem(
             SecurityRequirement()
                 .addList("Bearer Authentication")
-                .addList("Refresh Token") // 참고: https://velog.io/@seulpace/Swagger-Springdoc-access-token-refresh-token-설정
         )
         .components(
             Components()
@@ -31,12 +30,6 @@ class SwaggerConfig {
                         .bearerFormat("JWT")
                         .`in`(SecurityScheme.In.HEADER)
                         .name("Authorization")
-                ).addSecuritySchemes(
-                    "Refresh Token",
-                    SecurityScheme()
-                        .type(SecurityScheme.Type.APIKEY)
-                        .`in`(SecurityScheme.In.HEADER)
-                        .name("RefreshToken")
                 )
         )
         .info(
