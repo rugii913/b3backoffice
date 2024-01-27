@@ -35,6 +35,7 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/login",
                     "/signup",
+                    "/auth/my-reissued-token",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                 ).permitAll()
