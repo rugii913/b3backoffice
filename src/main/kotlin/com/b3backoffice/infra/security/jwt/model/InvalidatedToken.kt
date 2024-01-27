@@ -7,10 +7,6 @@ import jakarta.persistence.Id
 
 @Entity
 class InvalidatedToken(
-    val token: String
-) {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
-}
+    val token: String
+)
