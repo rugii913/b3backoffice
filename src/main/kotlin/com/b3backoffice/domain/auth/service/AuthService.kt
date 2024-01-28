@@ -11,19 +11,28 @@ class AuthService(
     private val jwtPlugin: JwtPlugin,
 ) {
 
-    fun reissueTokens(refreshToken: String): ReissueAccessTokenResponse {
-        if (tokenInvalidationService.isInvalidatedToken(refreshToken)) throw InvalidatedTokenException()
+    fun reissueTokens(refreshTokenInRequest: String): ReissueAccessTokenResponse {
+        if (tokenInvalidationService.isInvalidatedToken(refreshTokenInRequest)) throw InvalidatedTokenException()
 
-        val accessToken = jwtPlugin.validateToken(refreshToken)
+        val (reissuedAccessToken, reissuedRefreshToken) = jwtPlugin.validateToken(refreshTokenInRequest)
             .getOrThrow()
             .let {
-                jwtPlugin.generateAccessToken(
-                    it.payload.subject,
-                    it.payload.get("username", String::class.java),
-                    it.payload.get("role", String::class.java),
+                Pair(
+                    jwtPlugin.generateAccessToken(
+                        it.payload.subject,
+                        it.payload.get("username", String::class.java),
+                        it.payload.get("role", String::class.java),
+                    ),
+                    jwtPlugin.generateRefreshToken(
+                        it.payload.subject,
+                        it.payload.get("username", String::class.java),
+                        it.payload.get("role", String::class.java),
+                    )
                 )
             }
 
-        return ReissueAccessTokenResponse(accessToken)
+        tokenInvalidationService.invalidateToken(refreshTokenInRequest)
+
+        return ReissueAccessTokenResponse(accessToken = reissuedAccessToken, refreshToken = reissuedRefreshToken)
     }
 }
