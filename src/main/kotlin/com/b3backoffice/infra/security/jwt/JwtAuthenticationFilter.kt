@@ -1,8 +1,8 @@
 package com.b3backoffice.infra.security.jwt
 
 import com.b3backoffice.infra.security.UserPrincipal
-import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenException
-import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
+import com.b3backoffice.domain.auth.exception.InvalidatedTokenException
+import com.b3backoffice.domain.auth.service.TokenInvalidationService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

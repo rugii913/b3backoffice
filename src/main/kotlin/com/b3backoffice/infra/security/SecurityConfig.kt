@@ -1,7 +1,7 @@
 package com.b3backoffice.infra.security
 
+import com.b3backoffice.infra.security.authFilter.InvalidatedTokenExceptionFilter
 import com.b3backoffice.infra.security.jwt.JwtAuthenticationFilter
-import com.b3backoffice.infra.security.jwt.exception.InvalidatedTokenExceptionFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity

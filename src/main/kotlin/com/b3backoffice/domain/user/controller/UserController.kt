@@ -4,7 +4,7 @@ import com.b3backoffice.domain.exception.UnauthorizedException
 import com.b3backoffice.domain.user.dto.*
 import com.b3backoffice.domain.user.service.UserService
 import com.b3backoffice.infra.security.UserPrincipal
-import com.b3backoffice.infra.security.jwt.service.TokenInvalidationService
+import com.b3backoffice.domain.auth.service.TokenInvalidationService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpHeaders
