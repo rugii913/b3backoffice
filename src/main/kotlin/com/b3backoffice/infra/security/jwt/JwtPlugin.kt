@@ -29,6 +29,10 @@ class JwtPlugin(
         return generateToken(subject, username, role, Duration.ofHours(accessTokenExpirationHour))
     }
 
+    fun generateRefreshToken(subject: String, username: String, role: String): String{
+        return generateToken(subject, username, role, Duration.ofHours(refreshTokenExpirationHour))
+    }
+
     private fun generateToken(subject: String, username: String, role: String, expirationPeriod: Duration): String{
         val claims: Claims = Jwts.claims()
                 .add(mapOf("username" to username, "role" to role))
@@ -47,6 +51,8 @@ class JwtPlugin(
                 .compact()
     }
 
+    /*
+    // 생각할 수 있는 가장 단순한 방식으로 refresh token에도 subject, claims를 넣어둠
     fun generateRefreshToken(): String {
         val now = Instant.now()
         val expirationPeriod = Duration.ofHours(refreshTokenExpirationHour)
@@ -59,4 +65,5 @@ class JwtPlugin(
             .signWith(key)
             .compact()
     }
+    */
 }
