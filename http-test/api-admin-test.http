@@ -6,9 +6,10 @@
 # 4. 1번 리뷰 확인
 # 5. 1번 리뷰의 댓글 목록 확인
 # 6. (access token 만료 가정) refresh token으로 새 access token 받아오기
-# 7. 1번 리뷰 삭제
-# 8. 로그아웃 - access token, refresh token 모두 무효화시키기
-# 9. 리뷰 목록 확인
+# 7. 1번 리뷰 삭제 - 요청 두 번 보내보기
+# 8. 리뷰 작성 시도
+# 9. 로그아웃 - access token, refresh token 모두 무효화시키기
+# 10. (토큰 무효화된 상태) 리뷰 목록 확인 시도
 
 ### 1. 로그인 전 리뷰 목록 확인 시도
 GET {{local}}/reviews
@@ -60,7 +61,24 @@ Accept: {{all}}
 Content-Type: {{json}}
 Authorization: Bearer {{issued-admin-access-token}}
 
-### 8. 로그아웃 - access token, refresh token 모두 무효화시키기
+### 8. 리뷰 작성 시도
+POST {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+{
+  "storeName": "음식점 이름",
+  "cuisineCategory": "KOREAN",
+  "address": "아무 주소",
+  "visitedAt": "2024-01-28T13:10:37.206Z",
+  "waitingTime": 0,
+  "storeSize": 3,
+  "cleanliness": 3,
+  "content": "내용"
+}
+
+### 9. 로그아웃 - access token, refresh token 모두 무효화시키기
 POST {{local}}/logout
 Accept: {{all}}
 Content-Type: {{json}}
@@ -70,7 +88,7 @@ Authorization: Bearer {{issued-admin-access-token}}
   "refreshToken": "{{issued-admin-refresh-token}}"
 }
 
-### 9. 리뷰 목록 확인
+### 10. (토큰 무효화된 상태) 리뷰 목록 확인 시도
 GET {{local}}/reviews
 Accept: {{all}}
 Content-Type: {{json}}
