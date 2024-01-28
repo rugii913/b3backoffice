@@ -1,0 +1,77 @@
+# ADMIN 역할 계정(username = test1111)으로 테스트
+# (시나리오)
+# 1. 로그인 전 리뷰 목록 확인 시도
+# 2. ADMIN 역할 계정(username = test1111)으로 로그인
+# 3. 공지 목록 확인
+# 4. 1번 리뷰 확인
+# 5. 1번 리뷰의 댓글 목록 확인
+# 6. (access token 만료 가정) refresh token으로 새 access token 받아오기
+# 7. 1번 리뷰 삭제
+# 8. 로그아웃 - access token, refresh token 모두 무효화시키기
+# 9. 리뷰 목록 확인
+
+### 1. 로그인 전 리뷰 목록 확인 시도
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+
+### 2. ADMIN 역할 계정(username = test1111)으로 로그인
+# 로그인 후 나온 두 토큰을 http-client.private.env.json에 넣어 두기
+POST {{local}}/login
+Accept: {{all}}
+Content-Type: {{json}}
+
+{
+  "username": "test1111",
+  "password": "test111!"
+}
+
+### 3. 공지 목록 확인
+GET {{local}}/notices
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 4. 1번 리뷰 확인
+GET {{local}}/reviews/1
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 5. 1번 리뷰의 댓글 목록 확인
+GET {{local}}/reviews/1/comments
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 6. (access token 만료 가정) refresh token으로 새 access token 받아오기
+# 6번 이후 받은 access token을 http-client.private.env.json에 넣어두기
+POST {{local}}/auth/my-reissued-token
+Accept: {{all}}
+Content-Type: {{json}}
+
+{
+  "refreshToken": "{{issued-admin-refresh-token}}"
+}
+
+### 7. 1번 리뷰 삭제 - 요청 두 번 보내보기
+DELETE {{local}}/reviews/1
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 8. 로그아웃 - access token, refresh token 모두 무효화시키기
+POST {{local}}/logout
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+{
+  "refreshToken": "{{issued-admin-refresh-token}}"
+}
+
+### 9. 리뷰 목록 확인
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
