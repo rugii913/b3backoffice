@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface InvalidatedTokenRepository :JpaRepository<InvalidatedToken, Long> {
 
-    fun existsByToken(token: String): Boolean
+    fun existsByToken(targetToken: String): Boolean
 }

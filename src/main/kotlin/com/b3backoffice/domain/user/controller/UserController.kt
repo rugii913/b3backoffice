@@ -38,12 +38,12 @@ class UserController(
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest, logoutArgument: LogoutArgument): ResponseEntity<Unit> {
         request.getBearerToken()
-            ?.let { tokenInvalidationService.expireToken(it) } // access token 만료 처리
+            ?.let { tokenInvalidationService.invalidateToken(it) } // access token 만료 처리
             ?: throw IllegalStateException("비정상 로그아웃 요청") // TODO 예외처리 다시
 
 
         logoutArgument.refreshToken
-            ?.let { tokenInvalidationService.expireToken(it) } // refresh token 만료 처리
+            ?.let { tokenInvalidationService.invalidateToken(it) } // refresh token 만료 처리
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

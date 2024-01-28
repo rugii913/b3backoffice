@@ -9,11 +9,11 @@ class TokenInvalidationService(
     private val invalidatedTokenRepository: InvalidatedTokenRepository,
 ) {
 
-    fun expireToken(token: String): Unit {
-        invalidatedTokenRepository.save(InvalidatedToken(token))
+    fun invalidateToken(targetToken: String): Unit {
+        invalidatedTokenRepository.save(InvalidatedToken(targetToken))
     }
 
-    fun isInvalidatedToken(token: String): Boolean {
-        return invalidatedTokenRepository.existsByToken(token)
+    fun isInvalidatedToken(targetToken: String): Boolean {
+        return invalidatedTokenRepository.existsByToken(targetToken)
     }
 }
