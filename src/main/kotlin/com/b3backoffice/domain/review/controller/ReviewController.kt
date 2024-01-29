@@ -68,7 +68,7 @@ class ReviewController(
         @PathVariable reviewId: Long,
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
     ): ResponseEntity<Unit> {
-        reviewService.deleteReview(userPrincipal.id, reviewId)
+        reviewService.deleteReview(reviewId = reviewId, userId = userPrincipal.id)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 

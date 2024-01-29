@@ -15,9 +15,10 @@ class SwaggerConfig {
     fun openAPI(): OpenAPI = OpenAPI()
         // Swagger 자동 문서화 관련 Bean 재정의
         // - title, description, version 설정
-        // - authentication 관련 부분 사용할 수 있도록 수정
+        // - Authorize 사용할 수 있도록 수정
         .addSecurityItem(
-            SecurityRequirement().addList("Bearer Authentication")
+            SecurityRequirement()
+                .addList("Bearer Authentication")
         )
         .components(
             Components()

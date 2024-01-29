@@ -1,0 +1,84 @@
+# COMMON 역할 계정(username = test2222)으로 테스트
+# (시나리오)
+# 1. 로그인 전 리뷰 목록 확인 시도 ------------------------------------------- 인증되지 않았으므로 실패
+# 2. COMMON 역할 계정(username = test2222)으로 로그인 ----------------------- 로그인 성공 후 access token, refresh token을 body로 받음
+# 3. 리뷰 작성 - 12번 글 --------------------------------------------------- 12번 글 작성 후 내용 응답 받음
+# 4. (타인이 작성한 글) 1번 리뷰 삭제 시도 ------------------------------------ 본인이 작성한 글이 아니므로 삭제 실패
+# 5. (본인이 작성한 글) 12번 리뷰 삭제 --------------------------------------- 본인이 작성한 글이므로 삭제 성공
+# 6. 3번 리뷰 좋아요 표시 --------------------------------------------------- 좋아요 표시 성공
+# 7. 4번 리뷰 좋아요 표시 --------------------------------------------------- 좋아요 표시 성공
+# 8. 로그아웃 - access token, refresh token 모두 무효화시키기 ---------------- access token, refresh token 모두 무효화
+# 9. (토큰 무효화된 상태) 리뷰 목록 확인 시도 --------------------------------- 무효화된 토큰과 함께 인증이 필요한 API 호출 요청 시 API 호출 실패
+
+### 1. 로그인 전 리뷰 목록 확인 시도
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+
+### 2. COMMON 역할 계정(username = test2222)으로 로그인
+# 로그인 후 나온 두 토큰을 http-client.private.env.json에 넣어 두기
+POST {{local}}/login
+Accept: {{all}}
+Content-Type: {{json}}
+
+{
+  "username": "test2222",
+  "password": "test222@"
+}
+
+### 3. 리뷰 작성 - 12번 글
+POST {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+{
+  "storeName": "음식점 이름",
+  "cuisineCategory": "KOREAN",
+  "address": "아무 주소",
+  "visitedAt": "2024-01-28T13:10:37.206Z",
+  "waitingTime": 0,
+  "storeSize": 3,
+  "cleanliness": 3,
+  "content": "내용"
+}
+
+### 4. (타인이 작성한 글) 3번 리뷰 삭제 시도
+DELETE {{local}}/reviews/3
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+### 5. (본인이 작성한 글) 12번 리뷰 삭제
+DELETE {{local}}/reviews/12
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+### 6. 3번 리뷰 좋아요 표시
+POST {{local}}/reviews/3/hearts
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+### 7. 4번 리뷰 좋아요 표시
+POST {{local}}/reviews/4/hearts
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+### 8. 로그아웃 - access token, refresh token 모두 무효화시키기
+POST {{local}}/logout
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}
+
+{
+  "refreshToken": "{{issued-common-refresh-token}}"
+}
+
+### 9. (토큰 무효화된 상태) 리뷰 목록 확인 시도
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-common-access-token}}

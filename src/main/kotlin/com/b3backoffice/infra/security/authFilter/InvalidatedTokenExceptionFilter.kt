@@ -1,5 +1,6 @@
-package com.b3backoffice.infra.security.jwt.exception
+package com.b3backoffice.infra.security.authFilter
 
+import com.b3backoffice.domain.auth.exception.InvalidatedTokenException
 import com.b3backoffice.domain.exception.dto.ErrorDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain

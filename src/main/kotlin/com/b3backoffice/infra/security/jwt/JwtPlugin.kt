@@ -16,6 +16,7 @@ class JwtPlugin(
         @Value("\${auth.jwt.issuer}") private val issuer: String,
         @Value("\${auth.jwt.secret}") private val secret: String,
         @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
+        @Value("\${auth.jwt.refreshTokenExpirationHour}") private val refreshTokenExpirationHour: Long,
 ) {
 
     fun validateToken(jwt: String): Result<Jws<Claims>>{
@@ -26,6 +27,10 @@ class JwtPlugin(
     }
     fun generateAccessToken(subject: String, username: String, role: String): String{
         return generateToken(subject, username, role, Duration.ofHours(accessTokenExpirationHour))
+    }
+
+    fun generateRefreshToken(subject: String, username: String, role: String): String{
+        return generateToken(subject, username, role, Duration.ofHours(refreshTokenExpirationHour))
     }
 
     private fun generateToken(subject: String, username: String, role: String, expirationPeriod: Duration): String{
@@ -45,4 +50,20 @@ class JwtPlugin(
                 .signWith(key)
                 .compact()
     }
+
+    /*
+    // 생각할 수 있는 가장 단순한 방식으로 refresh token에도 subject, claims를 넣어둠
+    fun generateRefreshToken(): String {
+        val now = Instant.now()
+        val expirationPeriod = Duration.ofHours(refreshTokenExpirationHour)
+        val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+
+        return Jwts.builder()
+            .issuer(issuer)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plus(expirationPeriod)))
+            .signWith(key)
+            .compact()
+    }
+    */
 }

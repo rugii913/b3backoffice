@@ -1,0 +1,95 @@
+# ADMIN 역할 계정(username = test1111)으로 테스트
+# (시나리오)
+# 1. 로그인 전 리뷰 목록 확인 시도 ------------------------------------------- 인증되지 않았으므로 실패
+# 2. ADMIN 역할 계정(username = test1111)으로 로그인 ------------------------ 로그인 성공 후 access token, refresh token을 body로 받음
+# 3. 공지 목록 확인 -------------------------------------------------------- 공지 목록 body로 받음
+# 4. 1번 리뷰 확인 --------------------------------------------------------- 1번 리뷰 내용 body로 받음
+# 5. 1번 리뷰의 댓글 목록 확인 ----------------------------------------------- 1번 리뷰의 댓글 내용 body로 받음(query parameter 없으므로 첫 페이지 받음)
+# 6. (access token 만료 가정) refresh token으로 새 access token 받아오기 ----- 새 access token 및 refresh token을 받음(기존 refresh token은 무효화됨)
+# 7. 1번 리뷰 삭제 - 요청 두 번 보내보기 -------------------------------------- 1번 리뷰 삭제 가능(관리자 권한), 두번째 요청에서는 해당 리뷰 없다는 응답 받음
+# 8. 리뷰 작성 시도 -------------------------------------------------------- 정책 상 ADMIN는 리뷰 작성 불가, API 호출 실패
+# 9. 로그아웃 - access token, refresh token 모두 무효화시키기 ---------------- access token, refresh token 모두 무효화
+# 10. (토큰 무효화된 상태) 리뷰 목록 확인 시도 --------------------------------- 무효화된 토큰과 함께 인증이 필요한 API 호출 요청 시 API 호출 실패
+
+### 1. 로그인 전 리뷰 목록 확인 시도
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+
+### 2. ADMIN 역할 계정(username = test1111)으로 로그인
+# 로그인 후 나온 두 토큰을 http-client.private.env.json에 넣어 두기
+POST {{local}}/login
+Accept: {{all}}
+Content-Type: {{json}}
+
+{
+  "username": "test1111",
+  "password": "test111!"
+}
+
+### 3. 공지 목록 확인
+GET {{local}}/notices
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 4. 1번 리뷰 확인
+GET {{local}}/reviews/1
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 5. 1번 리뷰의 댓글 목록 확인
+GET {{local}}/reviews/1/comments
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 6. (access token 만료 가정) refresh token으로 새 access token 받아오기
+# 6번 이후 받은 access token을 http-client.private.env.json에 넣어두기
+POST {{local}}/auth/my-reissued-token
+Accept: {{all}}
+Content-Type: {{json}}
+
+{
+  "refreshToken": "{{issued-admin-refresh-token}}"
+}
+
+### 7. 1번 리뷰 삭제 - 요청 두 번 보내보기
+DELETE {{local}}/reviews/1
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+### 8. 리뷰 작성 시도
+POST {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+{
+  "storeName": "음식점 이름",
+  "cuisineCategory": "KOREAN",
+  "address": "아무 주소",
+  "visitedAt": "2024-01-28T13:10:37.206Z",
+  "waitingTime": 0,
+  "storeSize": 3,
+  "cleanliness": 3,
+  "content": "내용"
+}
+
+### 9. 로그아웃 - access token, refresh token 모두 무효화시키기
+POST {{local}}/logout
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
+
+{
+  "refreshToken": "{{issued-admin-refresh-token}}"
+}
+
+### 10. (토큰 무효화된 상태) 리뷰 목록 확인 시도
+GET {{local}}/reviews
+Accept: {{all}}
+Content-Type: {{json}}
+Authorization: Bearer {{issued-admin-access-token}}
